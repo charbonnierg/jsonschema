@@ -127,7 +127,45 @@ The recommended approach if you need to deal with YAML data is to first convert 
 
 ## Configurable behaviour
 
-The behaviour of the schema generator can be altered with parameters when a `jsonschema.Reflector`
+The `jsonschema.Reflect` function and the `jsonschema.ReflectFromType` functions both allow configuration through options:
+
+```go
+s := jsonschema.Reflect(TestUser{}, jsonschema.WithBaseSchemaID("https://example.com/schemas"))
+```
+
+Shared options can be assigned to an array:
+
+```go
+opts = []jsonschema.Option{
+  jsonschema.WithBaseSchemaID("https://example.com/schemas"),
+  jsonschema.WithAdditionalPropertiesAllowed(),
+}
+s := jsonschema.Reflect(TestUser{}, opts...)
+```
+
+Same options can be used when calling `NewReflector` to create a new reflector:
+
+```go
+reflector := NewReflector(
+		WithAdditionalPropertiesAllowed(),
+		WithAnonymous(),
+		WithAssignAnchor(),
+		WithBaseSchemaID("https://example.com/schemas"),
+		WithExpandedStruct(),
+		WithFieldNameTag("yaml"),
+		WithRequiredFromJSONSchemaTags(),
+		WithoutReference(),
+		WithIgnoredTypes(someType{}, someOtherType{}),
+		WithLookup(lookupFn),
+		WithMapper(mapperFn),
+		WithNamer(namerFn),
+		WithKeyNamer(keyNamerFn),
+		WithAdditionalFields(additionalFieldsFn),
+		WithCommentMap(commentMap),
+	)
+```
+
+Alternatively, the behaviour of the schema generator can be altered with parameters when a `jsonschema.Reflector`
 instance is created.
 
 ### ExpandedStruct
